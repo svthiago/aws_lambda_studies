@@ -18,3 +18,4 @@ https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-policies.html
 
 Set Repository Policies
 https://docs.aws.amazon.com/AmazonECR/latest/userguide/set-repository-policy.html
+
