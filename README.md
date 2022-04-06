@@ -1,6 +1,11 @@
 # aws_lambda_studies
 Studies of aws docs on lambda functions
 
+Main reference to this project:
+Event-driven, Serverless Architectures with AWS Lambda, SQS, DynamoDB, and API Gateway
+https://programmaticponderings.com/2019/10/04/event-driven-serverless-architectures-with-aws-lambda-sqs-dynamodb-and-api-gateway/
+
+
 Getting started
 https://docs.aws.amazon.com/lambda/latest/dg/getting-started.html
 
@@ -21,6 +26,3 @@ https://docs.aws.amazon.com/AmazonECR/latest/userguide/set-repository-policy.htm
 
 Lambda CRUD with dynamodb
 https://docs.aws.amazon.com/pt_br/apigateway/latest/developerguide/http-api-dynamo-db.html#http-api-dynamo-db-create-integration
-
-Event-driven, Serverless Architectures with AWS Lambda, SQS, DynamoDB, and API Gateway
-https://programmaticponderings.com/2019/10/04/event-driven-serverless-architectures-with-aws-lambda-sqs-dynamodb-and-api-gateway/
