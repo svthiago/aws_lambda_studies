@@ -1,0 +1,110 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Builds a pipeline to publish sensor data as SQS messages from a CSV
+  S3 bucket, Lambda and SQS.
+Globals:
+  Function:
+    Timeout: 3
+    Environment:
+      Variables:
+        SQS_QUEUE_URL: !Ref DemoQueue
+Parameters:
+  DataBucketName:
+    Type: String
+    Description: S3 bucket where CSV files are placed
+    Default: devices-bucket-1234
+Resources:
+  DemoDataBucket:
+    Type: AWS::S3::Bucket
+    DependsOn:
+      - S3ToSQSFunctionPermission
+    Properties:
+      BucketName: !Ref DataBucketName
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: s3:ObjectCreated:*
+            Function: !GetAtt S3ToSQSFunction.Arn
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: .csv
+  S3ToSQSFunctionPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref S3ToSQSFunction
+      Principal: s3.amazonaws.com
+      SourceArn: !Sub 'arn:aws:s3:::${DataBucketName}'
+      SourceAccount: !Ref AWS::AccountId
+  S3ToSQSFunctionExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: allowLogging
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:*
+                Resource: arn:aws:logs:*:*:*
+        - PolicyName: getObjects
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource: !Sub 'arn:aws:s3:::${DataBucketName}/*'
+        - PolicyName: produceToQueue
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sqs:SendMessage
+                Resource: !GetAtt DemoQueue.Arn
+  S3ToSQSFunction:
+    Type: AWS::Serverless::Function
+    Description: Respond to S3 Events
+    Properties:
+      Description: Responds to S3 Event - Sends to SQS
+      CodeUri: lambda_s3_to_sqs/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Role: !GetAtt S3ToSQSFunctionExecutionRole.Arn
+  DemoQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      RedrivePolicy:
+        deadLetterTargetArn:
+          Fn::GetAtt:
+            - DeadLetterQueue
+            - Arn
+        maxReceiveCount: 5
+  DeadLetterQueue:
+    Type: AWS::SQS::Queue
+Outputs:
+  MyStacksRegion:
+    Description: 'Region where cfn stack is located'
+    Value: !Ref AWS::Region
+  DemoBucket:
+    Description: 'S3 bucket where CSV files are placed'
+    Value: !Ref DataBucketName
+  DemoQueueArn:
+    Description: 'Arn of SQS Queue'
+    Value: !GetAtt DemoQueue.Arn
+  DemoQueueUrl:
+    Description: 'URL of SQS Queue'
+    Value: !Ref DemoQueue
