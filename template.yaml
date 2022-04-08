@@ -84,6 +84,21 @@ Resources:
       Handler: app.lambda_handler
       Runtime: python3.8
       Role: !GetAtt S3ToSQSFunctionExecutionRole.Arn
+  SqsToJiraFunction:
+    Type: AWS::Serverless::Function
+    Description: Responds to SQS Event - Creates an issue on Jira board
+    Properties:
+      Description: Checks messages from tests on Demoqueue and create issues on Jira if there's an error
+      CodeUri: lambda_sqs_to_jira/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Events:
+        SqsToDynamoDb:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt DemoQueue.Arn
+            BatchSize: 10
+            Enabled: true
   DemoQueue:
     Type: AWS::SQS::Queue
     Properties:
