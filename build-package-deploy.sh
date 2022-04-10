@@ -1,8 +1,8 @@
 
 # variables
-S3_DATA_BUCKET=devices-bucket-1234
-S3_BUILD_BUCKET=build-bucket-1234
-STACK_NAME=devices-stack
+export S3_DATA_BUCKET=devices-bucket-1234
+export S3_BUILD_BUCKET=build-bucket-1234
+export STACK_NAME=devices-stack
 
 # validate
 sam validate --template template.yaml
