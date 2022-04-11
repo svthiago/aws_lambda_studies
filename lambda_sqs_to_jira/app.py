@@ -44,12 +44,16 @@ def send_error_to_jira(sensor_data):
     issue_json = create_issue_json(sensor_data)
     sensor_data = json.dumps(issue_json)
 
+    logger.debug("Sending issue to Jira project with key {JIRA_PROJECT_KEY}")
     response = requests.post(request_url, headers=header, data=sensor_data)
-
+    logger.debug(f"The request status code is {response.status_code}")
+    logger.debug(response.text)
 
 
 def create_issue_json(sensor_data):
+    logger.debug("Creating issue json from sensor data")
     error_message = f"Error found on {sensor_data['device']['S']} executing the test {sensor_data['test']['S']}"
+    logger.debug(error_message)
 
     issue_json = {
         "fields": {
