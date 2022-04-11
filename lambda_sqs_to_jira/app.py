@@ -29,28 +29,27 @@ def lambda_handler(event, context):
         if 'status' in sensor_data.keys():
             if sensor_data['status']['S'] == 'ERROR':
                 logger.debug('Detected error on: {}'.format(sensor_data))
+                send_error_to_jira(sensor_data)
 
     return 0
 
 
-def send_error_to_jira(payload):
+def send_error_to_jira(sensor_data):
     header = {"Authorization": JIRA_API_TOKEN,
               "Accept": "application/json",
               "Content-Type": "application/json"}
 
     request_url = f"{JIRA_CLOUD_INSTANCE}/rest/api/3/issue"
 
-    issue_json = create_issue_json(payload)
-    payload = json.dumps(issue_json)
+    issue_json = create_issue_json(sensor_data)
+    sensor_data = json.dumps(issue_json)
 
-    response = requests.post(request_url, headers=header, data=payload)
-
-    return response
+    response = requests.post(request_url, headers=header, data=sensor_data)
 
 
-def create_issue_json(payload):
 
-    error_message = f"Error found on {payload['device']['S']} executing the test {payload['test']['S']}"
+def create_issue_json(sensor_data):
+    error_message = f"Error found on {sensor_data['device']['S']} executing the test {sensor_data['test']['S']}"
 
     issue_json = {
         "fields": {
