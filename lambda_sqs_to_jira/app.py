@@ -9,6 +9,7 @@ load_dotenv()
 
 JIRA_API_TOKEN = os.getenv('JIRA_API_TOKEN')
 JIRA_CLOUD_INSTANCE = os.getenv('JIRA_CLOUD_INSTANCE')
+JIRA_PROJECT_KEY = os.getenv('JIRA_PROJECT_KEY')
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -31,10 +32,11 @@ def lambda_handler(event, context):
 
     return 0
 
+
 def send_error_to_jira(payload):
     header = {"Authorization": JIRA_API_TOKEN,
-            "Accept": "application/json",
-            "Content-Type": "application/json"}
+              "Accept": "application/json",
+              "Content-Type": "application/json"}
 
     request_url = f"{JIRA_CLOUD_INSTANCE}/rest/api/3/issue"
 
@@ -44,6 +46,7 @@ def send_error_to_jira(payload):
     response = requests.post(request_url, headers=header, data=payload)
 
     return response
+
 
 def create_issue_json(payload):
 
@@ -56,20 +59,20 @@ def create_issue_json(payload):
                 "name": "Task"
             },
             "project": {
-                "key": "SD"
+                "key": JIRA_PROJECT_KEY,
             },
-        "description": {
+            "description": {
                 "type": "doc",
                 "version": 1,
                 "content": [
                     {
-                    "type": "paragraph",
-                    "content": [
-                        {
-                        "text": error_message,
-                        "type": "text"
-                        }
-                    ]
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "text": error_message,
+                                "type": "text"
+                            }
+                        ]
                     }
                 ]
             }
