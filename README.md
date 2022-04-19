@@ -26,3 +26,6 @@ https://docs.aws.amazon.com/AmazonECR/latest/userguide/set-repository-policy.htm
 
 Lambda CRUD with dynamodb
 https://docs.aws.amazon.com/pt_br/apigateway/latest/developerguide/http-api-dynamo-db.html#http-api-dynamo-db-create-integration
+
+Securing an AWS app
+https://aws.amazon.com/blogs/publicsector/twitch-episode-1-getting-started-with-secure-app-dev-job-0/
